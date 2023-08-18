@@ -14,16 +14,6 @@ int main()
     auto subject = std::make_shared<Subject<string>>();
     auto root = subject->GetObservable();
 
-    // オブザーバー１つパターン
-    /*/
-    root->Subscribe(
-        [](const string& s)
-        {
-            std::cout << "value: " << s << std::endl;
-        }
-    );
-    //*/
-
     // オブザーバー連結パターン
     /*/
     root->Select<string>([](const string& s)
@@ -49,16 +39,16 @@ int main()
 
     // オブザーバー連結パターン を実際に利用するときの感じの例
     //*/
-    root->Select<string>([](const string& s) { return s + s; })
-        ->Where([=](const string& s) { return s != "FugaFuga"; })
-        ->Subscribe([](const string& s)
-        {
-            std::cout << "value: " << s << std::endl;
-        });
+    auto d1 = root->Select<string>([](const string& s) { return s + s; })
+                  ->Where([=](const string& s) { return s != "FugaFuga"; })
+                  ->Subscribe([](const string& s)
+                  {
+                      std::cout << "value: " << s << std::endl;
+                  });
     //*/
 
     // Observerを複数登録するテスト
-    root->Subscribe([](const string& s)
+    auto d2 = root->Subscribe([](const string& s)
     {
         std::cout << "--------------------------------------" << std::endl;
     });
@@ -67,8 +57,11 @@ int main()
     // 実行処理
     std::cout << "Send value." << std::endl;
     subject->OnNext("test");
+    if (auto p = d2.lock()) p->Dispose();
+
     std::cout << "Send value. (2)" << std::endl;
     subject->OnNext("Fuga");
+
     std::cout << "Send value. (3)" << std::endl;
     subject->OnNext("HogeHoge");
 

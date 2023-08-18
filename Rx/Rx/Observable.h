@@ -1,26 +1,28 @@
 #pragma once
 #include <functional>
 
+#include "Disposable.h"
 #include "Observer.h"
 
 template <typename T>
 class Observable
 {
-    std::function<void(std::shared_ptr<Observer<T>>)> subscribe;
+    std::function<std::weak_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe;
 
 public:
-    explicit Observable(std::function<void(std::shared_ptr<Observer<T>>)> subscribe): subscribe(std::move(subscribe))
+    explicit Observable(std::function<std::weak_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe)
+        : subscribe(std::move(subscribe))
     {
     }
 
-    void Subscribe(std::shared_ptr<Observer<T>> observer) const
+    std::weak_ptr<Disposable> Subscribe(std::shared_ptr<Observer<T>> observer) const
     {
-        subscribe(observer);
+        return subscribe(observer);
     }
 
-    void Subscribe(std::function<void(T)> sub) const
+    std::weak_ptr<Disposable> Subscribe(std::function<void(T)> sub) const
     {
-        Subscribe(std::make_shared<Observer<T>>(
+        return Subscribe(std::make_shared<Observer<T>>(
             [=](const T& v)
             {
                 sub(v);
@@ -34,7 +36,7 @@ public:
         return std::make_shared<Observable<U>>(
             [=](std::shared_ptr<Observer<T>> o)
             {
-                Subscribe(
+                return Subscribe(
                     [=](const T& v)
                     {
                         o->OnNext(select(v));
@@ -49,7 +51,7 @@ public:
         return std::make_shared<Observable<T>>(
             [=](std::shared_ptr<Observer<T>> o)
             {
-                Subscribe(
+                return Subscribe(
                     [=](const T& v)
                     {
                         if (where(v))
