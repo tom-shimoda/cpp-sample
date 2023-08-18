@@ -1,3 +1,5 @@
+#define _CRTDBG_MAP_ALLOC // メモリリークチェック用
+
 #include <functional>
 #include <iostream>
 
@@ -8,13 +10,15 @@ using namespace std;
 
 int main()
 {
-    auto* source = new Observer<string>(nullptr);
-    auto root = new Observable<string>{
-        [&](Observer<string>* o)
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // メモリリークチェック用
+
+    auto source = std::make_shared<Observer<string>>(nullptr);
+    auto root = std::make_shared<Observable<string>>(
+        [&](std::shared_ptr<Observer<string>> o)
         {
             source = o;
         }
-    };
+    );
 
     // オブザーバー１つパターン
     /*/
@@ -67,4 +71,10 @@ int main()
     source->OnNext("Fuga");
     std::cout << "Send value. (3)" << std::endl;
     source->OnNext("HogeHoge");
+
+    // メモリリーク検出チェックのためスマートポインタ解放しておく
+    source = nullptr;
+    root = nullptr;
+
+    _CrtDumpMemoryLeaks(); // メモリリークチェック用
 }

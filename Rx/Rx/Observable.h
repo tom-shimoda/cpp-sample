@@ -6,33 +6,33 @@
 template <typename T>
 class Observable
 {
-    std::function<void(Observer<T>*)> subscribe;
+    std::function<void(std::shared_ptr<Observer<T>>)> subscribe;
 
 public:
-    explicit Observable(std::function<void(Observer<T>*)> subscribe): subscribe(std::move(subscribe))
+    explicit Observable(std::function<void(std::shared_ptr<Observer<T>>)> subscribe): subscribe(std::move(subscribe))
     {
     }
 
-    void Subscribe(Observer<T>* observer) const
+    void Subscribe(std::shared_ptr<Observer<T>> observer) const
     {
         return subscribe(observer);
     }
 
     void Subscribe(std::function<void(T)> sub) const
     {
-        Subscribe(new Observer<T>{
+        Subscribe(std::make_shared<Observer<T>>(
             [=](const T& v)
             {
                 sub(v);
             }
-        });
+        ));
     }
 
     template <typename U>
-    Observable<U>* Select(std::function<U(T)> select)
+    std::shared_ptr<Observable<U>> Select(std::function<U(T)> select)
     {
-        return new Observable{
-            [=](Observer<T>* o)
+        return std::make_shared<Observable<U>>(
+            [=](std::shared_ptr<Observer<T>> o)
             {
                 Subscribe(
                     [=](const T& v)
@@ -41,13 +41,13 @@ public:
                     }
                 );
             }
-        };
+        );
     }
 
-    Observable<T>* Where(std::function<bool(T)> where)
+    std::shared_ptr<Observable<T>> Where(std::function<bool(T)> where)
     {
-        return new Observable{
-            [=](Observer<T>* o)
+        return std::make_shared<Observable<T>>(
+            [=](std::shared_ptr<Observer<T>> o)
             {
                 Subscribe(
                     [=](const T& v)
@@ -59,6 +59,6 @@ public:
                     }
                 );
             }
-        };
+        );
     }
 };
