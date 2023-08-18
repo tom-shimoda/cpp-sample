@@ -3,8 +3,7 @@
 #include <functional>
 #include <iostream>
 
-#include "Observer.h"
-#include "Observable.h"
+#include "Subject.h"
 
 using namespace std;
 
@@ -12,13 +11,8 @@ int main()
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // メモリリークチェック用
 
-    auto source = std::make_shared<Observer<string>>(nullptr);
-    auto root = std::make_shared<Observable<string>>(
-        [&](std::shared_ptr<Observer<string>> o)
-        {
-            source = o;
-        }
-    );
+    auto subject = std::make_shared<Subject<string>>();
+    auto root = subject->GetObservable();
 
     // オブザーバー１つパターン
     /*/
@@ -34,7 +28,7 @@ int main()
     /*/
     root->Select<string>([](const string& s)
         {
-            std::cout << s << " is coming. Repeat double." << std::endl;
+            std::cout << s << " is coming. Repeat twice." << std::endl;
             return s + s;
         })
         ->Where([=](const string& s)
@@ -63,18 +57,24 @@ int main()
         });
     //*/
 
+    // Observerを複数登録するテスト
+    root->Subscribe([](const string& s)
+    {
+        std::cout << "--------------------------------------" << std::endl;
+    });
+
 
     // 実行処理
     std::cout << "Send value." << std::endl;
-    source->OnNext("test");
+    subject->OnNext("test");
     std::cout << "Send value. (2)" << std::endl;
-    source->OnNext("Fuga");
+    subject->OnNext("Fuga");
     std::cout << "Send value. (3)" << std::endl;
-    source->OnNext("HogeHoge");
+    subject->OnNext("HogeHoge");
 
     // メモリリーク検出チェックのためスマートポインタ解放しておく
-    source = nullptr;
     root = nullptr;
+    subject = nullptr;
 
     _CrtDumpMemoryLeaks(); // メモリリークチェック用
 }

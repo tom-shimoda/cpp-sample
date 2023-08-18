@@ -15,7 +15,7 @@ public:
 
     void Subscribe(std::shared_ptr<Observer<T>> observer) const
     {
-        return subscribe(observer);
+        subscribe(observer);
     }
 
     void Subscribe(std::function<void(T)> sub) const
