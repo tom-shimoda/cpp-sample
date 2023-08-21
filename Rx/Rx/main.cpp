@@ -48,16 +48,20 @@ int main()
     //*/
 
     // Observerを複数登録するテスト
-    auto d2 = root->Subscribe([](const string& s)
+    static std::weak_ptr<Disposable> d2;
+    d2 = root->Subscribe([=](const string& s)
     {
         std::cout << "--------------------------------------" << std::endl;
+
+        // 登録した処理内でのDisposeテスト
+        if (auto p = d2.lock()) p->Dispose();
     });
 
 
     // 実行処理
     std::cout << "Send value." << std::endl;
     subject->OnNext("test");
-    if (auto p = d2.lock()) p->Dispose();
+    // if (auto p = d2.lock()) p->Dispose(); // Observerを複数登録するテストするためコメントアウト
 
     std::cout << "Send value. (2)" << std::endl;
     subject->OnNext("Fuga");

@@ -8,6 +8,7 @@
 template <typename T>
 class Subject
 {
+    // Disposeで該当Observerの登録解除ができるようペアにしておく
     struct Source
     {
         std::shared_ptr<Observer<T>> observer;
@@ -20,13 +21,12 @@ class Subject
         }
     };
 
-    std::list<Source> source;
-
     struct Disposer : Disposable
     {
         std::list<Source>* src;
+        std::list<Source*>* willSrc;
 
-        Disposer(std::list<Source>* src): src(src)
+        Disposer(std::list<Source>* src, std::list<Source*>* willSrc): src(src), willSrc(willSrc)
         {
         }
 
@@ -38,21 +38,64 @@ class Subject
             {
                 if ((*itr).disposer.get() == this)
                 {
-                    itr = src->erase(itr);
-                    break;
+                    willSrc->emplace_back(&*itr);
                 }
                 ++itr;
             }
         }
     };
 
-public:
-    void OnNext(T v) const
+    // 登録物
+    std::list<Source> source;
+    // 廃棄予定のもの
+    std::list<Source*> willDisposeSourceList;
+
+    // 廃棄予定のものを廃棄
+    void Dispose()
     {
+        for (auto willItr = willDisposeSourceList.begin(); willItr != willDisposeSourceList.end();)
+        {
+            auto isHit = false;
+
+            for (auto itr = source.begin(); itr != source.end();)
+            {
+                if (&*itr == *willItr)
+                {
+                    itr = source.erase(itr);
+                    isHit = true;
+                    break;
+                }
+                ++itr;
+            }
+
+            if (isHit)
+            {
+                willItr = willDisposeSourceList.erase(willItr);
+                continue;
+            }
+            ++willItr;
+        }
+        
+        if (!willDisposeSourceList.empty())
+        {
+            // ここを通ることはない
+            throw std::runtime_error("Incorrectly disposed.");
+        }
+    }
+
+public:
+    void OnNext(T v)
+    {
+        // Dispose単体で呼んだ場合は、予約されただけの状態なのでここで廃棄される
+        Dispose();
+
         for (auto&& e : source)
         {
             e.observer->OnNext(v);
         }
+
+        // OnNext処理内にてDisposeを呼んだ場合はここで廃棄される
+        Dispose();
     }
 
     std::shared_ptr<Observable<T>> GetObservable()
@@ -60,7 +103,7 @@ public:
         return std::make_shared<Observable<T>>(
             [=](std::shared_ptr<Observer<T>> o) -> std::weak_ptr<Disposable>
             {
-                auto disposer = std::make_shared<Disposer>(&source);
+                auto disposer = std::make_shared<Disposer>(&source, &willDisposeSourceList);
                 source.emplace_back(o, disposer);
                 return disposer;
             }
