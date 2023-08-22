@@ -7,20 +7,20 @@
 template <typename T>
 class Observable
 {
-    std::function<std::weak_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe;
+    std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe;
 
 public:
-    explicit Observable(std::function<std::weak_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe)
+    explicit Observable(std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe)
         : subscribe(std::move(subscribe))
     {
     }
 
-    std::weak_ptr<Disposable> Subscribe(std::shared_ptr<Observer<T>> observer) const
+    std::shared_ptr<Disposable> Subscribe(std::shared_ptr<Observer<T>> observer) const
     {
         return subscribe(observer);
     }
 
-    std::weak_ptr<Disposable> Subscribe(std::function<void(T)> sub) const
+    std::shared_ptr<Disposable> Subscribe(std::function<void(T)> sub) const
     {
         return Subscribe(std::make_shared<Observer<T>>(
             [=](const T& v)

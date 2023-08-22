@@ -34,6 +34,8 @@ class Subject
 
         void Dispose() override
         {
+            if (IsDisposed()) return;
+
             for (auto itr = src->begin(); itr != src->end();)
             {
                 if ((*itr).disposer.get() == this)
@@ -42,6 +44,9 @@ class Subject
                 }
                 ++itr;
             }
+
+            // 基底を呼ぶのを忘れずに。(忘れると、寿命が来る前に手動Disposeした場合にエラーとなる)
+            Disposable::Dispose();
         }
     };
 
@@ -75,10 +80,10 @@ class Subject
             }
             ++willItr;
         }
-        
+
         if (!willDisposeSourceList.empty())
         {
-            // ここを通ることはない
+            // 登録物の中に廃棄予定のものが見つからない
             throw std::runtime_error("Incorrectly disposed.");
         }
     }
@@ -101,7 +106,7 @@ public:
     std::shared_ptr<Observable<T>> GetObservable()
     {
         return std::make_shared<Observable<T>>(
-            [=](std::shared_ptr<Observer<T>> o) -> std::weak_ptr<Disposable>
+            [=](std::shared_ptr<Observer<T>> o)
             {
                 auto disposer = std::make_shared<Disposer>(&source, &willDisposeSourceList);
                 source.emplace_back(o, disposer);
