@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "Empty.h"
 #include "ObservableDestroyTrigger.h"
 #include "Observable.h"
 #include "Subject.h"
@@ -155,4 +156,19 @@ static void AddToTest(std::shared_ptr<Subject<std::string>> subject)
 
     std::cout << "Send value. (3)" << std::endl;
     subject->OnNext("HogeHoge");
+}
+
+// 渡すものがない場合
+static void EmptyTest(std::shared_ptr<Subject<Empty>> subject)
+{
+    const auto observable = subject->GetObservable();
+    auto d =
+        observable->Subscribe([](Empty _)
+        {
+            std::cout << "Empty Test." << std::endl;
+        });
+
+    // 実行処理
+    std::cout << "Send value." << std::endl;
+    subject->OnNext(Empty());
 }

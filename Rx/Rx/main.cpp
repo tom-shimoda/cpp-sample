@@ -25,6 +25,8 @@ int main()
     // AddToテスト
     AddToTest(subject);
 
+    // 渡すものがない場合
+    // EmptyTest(std::make_shared<Subject<Empty>>());
 
     // メモリリーク検出チェックに引っかかるためスマートポインタ解放しておく
     subject = nullptr;
