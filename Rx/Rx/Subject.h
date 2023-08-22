@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <list>
 #include <memory>
+#include <stdexcept>
 
 #include "Observable.h"
 #include "Observer.h"

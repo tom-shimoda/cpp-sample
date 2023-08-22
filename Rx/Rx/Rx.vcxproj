@@ -163,9 +163,10 @@
     <ClInclude Include="ObservableDestroyTrigger.h" />
     <ClInclude Include="Observable.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="Sample\EnemySample.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="TestFunc.h" />
-    <ClInclude Include="Empty.h" />
+    <ClInclude Include="Unit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
