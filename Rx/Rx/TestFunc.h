@@ -16,7 +16,7 @@ static void ObserverChainTestWithLog(std::shared_ptr<Subject<std::string>> subje
                   std::cout << s << " is coming. Repeat twice." << std::endl;
                   return s + s;
               })
-              ->Where([=](const std::string& s)
+              ->Where([](const std::string& s)
               {
                   if (s == "FugaFuga")
                   {
@@ -47,7 +47,7 @@ static void ObserverChainTest(std::shared_ptr<Subject<std::string>> subject)
 {
     const auto observable = subject->GetObservable();
     observable->Select<std::string>([](const std::string& s) { return s + s; })
-              ->Where([=](const std::string& s) { return s != "FugaFuga"; })
+              ->Where([](const std::string& s) { return s != "FugaFuga"; })
               ->Subscribe([](const std::string& s)
               {
                   std::cout << "value: " << s << std::endl;
@@ -69,13 +69,13 @@ static void SubscribeManyTimesTest(std::shared_ptr<Subject<std::string>> subject
 {
     const auto observable = subject->GetObservable();
     observable->Select<std::string>([](const std::string& s) { return s + s; })
-              ->Where([=](const std::string& s) { return s != "FugaFuga"; })
+              ->Where([](const std::string& s) { return s != "FugaFuga"; })
               ->Subscribe([](const std::string& s)
               {
                   std::cout << "value: " << s << std::endl;
               });
 
-    observable->Subscribe([=](const std::string& s)
+    observable->Subscribe([](const std::string& s)
     {
         std::cout << "--------------------------------------" << std::endl;
     });
@@ -97,14 +97,14 @@ static void DisposeTest(std::shared_ptr<Subject<std::string>> subject)
     const auto observable = subject->GetObservable();
     auto d1 =
         observable->Select<std::string>([](const std::string& s) { return s + s; })
-                  ->Where([=](const std::string& s) { return s != "FugaFuga"; })
+                  ->Where([](const std::string& s) { return s != "FugaFuga"; })
                   ->Subscribe([](const std::string& s)
                   {
                       std::cout << "value: " << s << std::endl;
                   });
 
     static std::shared_ptr<Disposable> d2;
-    d2 = observable->Subscribe([=](const std::string& s)
+    d2 = observable->Subscribe([](const std::string& s)
     {
         std::cout << "--------------------------------------" << std::endl;
 
@@ -136,7 +136,7 @@ static void AddToTest(std::shared_ptr<Subject<std::string>> subject)
     const auto observable = subject->GetObservable();
     auto d =
         observable->Select<std::string>([](const std::string& s) { return s + s; })
-                  ->Where([=](const std::string& s) { return s != "FugaFuga"; })
+                  ->Where([](const std::string& s) { return s != "FugaFuga"; })
                   ->Subscribe([](const std::string& s)
                   {
                       std::cout << "value: " << s << std::endl;
