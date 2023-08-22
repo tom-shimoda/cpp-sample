@@ -4,17 +4,19 @@
 template <typename T>
 class Observer
 {
-    std::function<void(T)> onNext;
+protected:
+    std::function<void(T)> _onNext;
 
 public:
-    explicit Observer(std::function<void(T)> onNext) : onNext(std::move(onNext))
+    explicit Observer(std::function<void(T)> onNext) : _onNext(std::move(onNext))
     {
     }
 
-    void OnNext(T v) const
+    virtual ~Observer() = default;
+
+    virtual void OnNext(T v)
     {
-        if (onNext == nullptr) return;
-        onNext(v);
+        if (_onNext == nullptr) return;
+        _onNext(v);
     }
 };
-

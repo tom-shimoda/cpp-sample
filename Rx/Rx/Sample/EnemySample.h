@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <random>
-#include <vector>
 
 #include "../Subject.h"
 
@@ -17,7 +16,6 @@ static int random(int low, int high)
 struct Enemy
 {
     int uid;
-    std::string name;
     int hp;
 
     explicit Enemy(int uid): uid(uid), hp(100)
@@ -31,17 +29,16 @@ struct Enemy
 
 void EnemySample()
 {
-    std::vector<Enemy> enemies;
-    for (int i = 0; i < 3; i++)
-    {
-        enemies.emplace_back(i);
-    }
+    Enemy enemy(0);
 
     auto subject = std::make_shared<Subject<Enemy*>>();
 
     // dotダメージ処理
     static std::shared_ptr<Disposable> dotDamageDisposer;
     dotDamageDisposer = subject->GetObservable()
+                               ->Skip(3)
+                               // ->Take(3)
+                               // ->Take(3, [=] { dotDamageDisposer->Dispose(); })
                                ->Where([](const Enemy* e)
                                {
                                    return !e->IsDead();
@@ -49,7 +46,7 @@ void EnemySample()
                                ->Subscribe([](Enemy* e)
                                {
                                    auto prev = e->hp;
-                                   e->Damage(10);
+                                   e->Damage(15);
                                    std::cout << e->uid << "'s hp: " << prev << " -> " << e->hp << std::endl;
                                });
 
@@ -69,11 +66,8 @@ void EnemySample()
     int counter = 0;
     while (counter++ < 10)
     {
-        std::cout << "------------------- count " << counter << " -------------------" << std::endl;
-        
-        for (auto&& v : enemies)
-        {
-            subject->OnNext(&v);
-        }
+        std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
+
+        subject->OnNext(&enemy);
     }
 }

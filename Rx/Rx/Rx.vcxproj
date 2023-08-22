@@ -163,6 +163,8 @@
     <ClInclude Include="ObservableDestroyTrigger.h" />
     <ClInclude Include="Observable.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="Observer\SkipObserver.h" />
+    <ClInclude Include="Observer\TakeObserver.h" />
     <ClInclude Include="Sample\EnemySample.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="TestFunc.h" />

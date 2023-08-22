@@ -4,6 +4,9 @@
 #include "Disposable.h"
 #include "Observer.h"
 
+#include "Observer/SkipObserver.h"
+#include "Observer/TakeObserver.h"
+
 template <typename T>
 class Observable
 {
@@ -59,6 +62,43 @@ public:
                             o->OnNext(v);
                         }
                     }
+                );
+            }
+        );
+    }
+
+    std::shared_ptr<Observable<T>> Skip(int num)
+    {
+        return std::make_shared<Observable<T>>(
+            [=](std::shared_ptr<Observer<T>> o)
+            {
+                return Subscribe(
+                    std::make_shared<SkipObserver<T>>(
+                        [=](const T& v)
+                        {
+                            o->OnNext(v);
+                        },
+                        num
+                    )
+                );
+            }
+        );
+    }
+    
+    std::shared_ptr<Observable<T>> Take(int num, std::function<void()> onTakeEnd = nullptr)
+    {
+        return std::make_shared<Observable<T>>(
+            [=](std::shared_ptr<Observer<T>> o)
+            {
+                return Subscribe(
+                    std::make_shared<TakeObserver<T>>(
+                        [=](const T& v)
+                        {
+                            o->OnNext(v);
+                        },
+                        num,
+                        onTakeEnd
+                    )
                 );
             }
         );
