@@ -6,6 +6,7 @@
 #include "Unit.h"
 #include "ObservableDestroyTrigger.h"
 #include "Observable.h"
+#include "ObservableUtil.h"
 #include "Subject.h"
 
 class TestFunc
@@ -175,6 +176,16 @@ class TestFunc
         subject->OnNext(Unit());
     }
 
+    // 毎フレーム更新処理として登録する例
+    static void EveryUpdateTest()
+    {
+        // 毎フレーム更新したい処理の登録例 (UnirxのObservable.EveryUpdate()的な)
+        ObservableUtil::EveryUpdate()->Subscribe([](Unit _)
+        {
+            std::cout << "Update." << std::endl;
+        });
+    }
+
 public:
     static void DoTest()
     {
@@ -191,9 +202,12 @@ public:
         // DisposeTest(std::make_shared<Subject<std::string>>());
 
         // AddToテスト
-        AddToTest(std::make_shared<Subject<std::string>>());
+        // AddToTest(std::make_shared<Subject<std::string>>());
 
         // 渡すものがない場合
         // EmptyTest(std::make_shared<Subject<Empty>>());
+
+        // 毎フレーム更新処理として登録する例
+        EveryUpdateTest();
     }
 };

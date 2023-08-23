@@ -157,11 +157,13 @@
     <ClCompile Include="ObservableDestroyTrigger.cpp" />
     <ClCompile Include="Disposable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObservableUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Disposable.h" />
     <ClInclude Include="ObservableDestroyTrigger.h" />
     <ClInclude Include="Observable.h" />
+    <ClInclude Include="ObservableUtil.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Observer\SkipObserver.h" />
     <ClInclude Include="Observer\TakeObserver.h" />

@@ -1,7 +1,10 @@
+#include <conio.h>
 #include <functional>
 
 #include "TestFunc.h"
 #include "Sample\EnemySample.h"
+
+#include "ObservableUtil.h"
 
 int main()
 {
@@ -12,6 +15,13 @@ int main()
 
     // 実用的なサンプル
     EnemySample();
+
+    auto counter = 0;
+    while (counter++ < 10) // メインループの想定
+    {
+        // 毎フレームEveryUpdateSubjectのOnNextを叩く
+        ObservableUtil::DoEveryUpdate();
+    }
 
     _CrtDumpMemoryLeaks(); // メモリリークチェック用
 }

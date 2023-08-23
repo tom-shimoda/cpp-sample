@@ -84,7 +84,7 @@ public:
             }
         );
     }
-    
+
     std::shared_ptr<Observable<T>> Take(int num, std::function<void()> onTakeEnd = nullptr)
     {
         return std::make_shared<Observable<T>>(
