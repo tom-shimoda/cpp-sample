@@ -23,5 +23,8 @@ int main()
         ObservableUtil::DoEveryUpdate();
     }
 
+    // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく
+    ObservableUtil::everyUpdateSubject = nullptr;
+
     _CrtDumpMemoryLeaks(); // メモリリークチェック用
 }

@@ -70,4 +70,9 @@ void EnemySample()
 
         subject->OnNext(&enemy);
     }
+
+    // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく
+    dotDamageDisposer = nullptr;
+    checkDeadDisposer = nullptr;
+    subject = nullptr;
 }
