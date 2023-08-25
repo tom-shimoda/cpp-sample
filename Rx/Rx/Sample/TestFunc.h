@@ -47,27 +47,27 @@ class TestFunc
         subject->OnNext("HogeHoge");
     }
 
-    // オブザーバー連結パターン を実際に利用するときの感じの例
-    static void ObserverChainTest(const std::shared_ptr<Subject<std::string>>& subject)
+    // Selectの戻り値の型が異なる場合のテスト
+    static void SelectObservableTest(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto _ =
-            observable->Select<std::string>([](const std::string& s) { return s + s; })
-                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                      ->Subscribe([](const std::string& s)
+            observable->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                      ->Where([](int i) { return i > 0; })
+                      ->Subscribe([](int i)
                       {
-                          std::cout << "value: " << s << std::endl;
+                          std::cout << "value: " << i << std::endl;
                       });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
-        subject->OnNext("test");
+        subject->OnNext("123");
 
         std::cout << "Send value. (2)" << std::endl;
-        subject->OnNext("Fuga");
+        subject->OnNext("0");
 
         std::cout << "Send value. (3)" << std::endl;
-        subject->OnNext("HogeHoge");
+        subject->OnNext("-456");
     }
 
     // Subscribeを複数回行うテスト
@@ -194,10 +194,10 @@ public:
     static void DoTest()
     {
         // オブザーバー連結パターン
-        ObserverChainTestWithLog(std::make_shared<Subject<std::string>>());
+        // ObserverChainTestWithLog(std::make_shared<Subject<std::string>>());
 
-        // オブザーバー連結パターン を実際に利用するときの感じの例
-        // ObserverChainTest(std::make_shared<Subject<std::string>>());
+        // Selectの戻り値の型が異なる場合のテスト
+        SelectObservableTest(std::make_shared<Subject<std::string>>());
 
         // Subscribeを複数回行うテスト
         // SubscribeManyTimesTest(std::make_shared<Subject<std::string>>());

@@ -33,11 +33,11 @@ public:
         ));
     }
 
-    template <typename U>
-    std::shared_ptr<Observable<U>> Select(std::function<U(T)> select)
+    template <typename Ret>
+    std::shared_ptr<Observable<Ret>> Select(std::function<Ret(T)> select)
     {
-        return std::make_shared<Observable<U>>(
-            [=](std::shared_ptr<Observer<T>> o)
+        return std::make_shared<Observable<Ret>>(
+            [=](std::shared_ptr<Observer<Ret>> o)
             {
                 return Subscribe(
                     [=](const T& v)
