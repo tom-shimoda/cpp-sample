@@ -15,25 +15,26 @@ class TestFunc
     static void ObserverChainTestWithLog(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
-        observable->Select<std::string>([](const std::string& s)
-                  {
-                      std::cout << s << " is coming. Repeat twice." << std::endl;
-                      return s + s;
-                  })
-                  ->Where([](const std::string& s)
-                  {
-                      if (s == "FugaFuga")
+        auto _ =
+            observable->Select<std::string>([](const std::string& s)
                       {
-                          std::cout << "FugaFuga don't output" << std::endl;
-                          return false;
-                      }
+                          std::cout << s << " is coming. Repeat twice." << std::endl;
+                          return s + s;
+                      })
+                      ->Where([](const std::string& s)
+                      {
+                          if (s == "FugaFuga")
+                          {
+                              std::cout << "FugaFuga don't output" << std::endl;
+                              return false;
+                          }
 
-                      return true;
-                  })
-                  ->Subscribe([](const std::string& s)
-                  {
-                      std::cout << "value: " << s << std::endl;
-                  });
+                          return true;
+                      })
+                      ->Subscribe([](const std::string& s)
+                      {
+                          std::cout << "value: " << s << std::endl;
+                      });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -50,12 +51,13 @@ class TestFunc
     static void ObserverChainTest(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
-        observable->Select<std::string>([](const std::string& s) { return s + s; })
-                  ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                  ->Subscribe([](const std::string& s)
-                  {
-                      std::cout << "value: " << s << std::endl;
-                  });
+        auto _ =
+            observable->Select<std::string>([](const std::string& s) { return s + s; })
+                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
+                      ->Subscribe([](const std::string& s)
+                      {
+                          std::cout << "value: " << s << std::endl;
+                      });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -72,14 +74,15 @@ class TestFunc
     static void SubscribeManyTimesTest(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
-        observable->Select<std::string>([](const std::string& s) { return s + s; })
-                  ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                  ->Subscribe([](const std::string& s)
-                  {
-                      std::cout << "value: " << s << std::endl;
-                  });
+        auto d1 =
+            observable->Select<std::string>([](const std::string& s) { return s + s; })
+                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
+                      ->Subscribe([](const std::string& s)
+                      {
+                          std::cout << "value: " << s << std::endl;
+                      });
 
-        observable->Subscribe([](const std::string& s)
+        auto d2 = observable->Subscribe([](const std::string& s)
         {
             std::cout << "--------------------------------------" << std::endl;
         });
@@ -180,17 +183,18 @@ class TestFunc
     static void EveryUpdateTest()
     {
         // 毎フレーム更新したい処理の登録例 (UnirxのObservable.EveryUpdate()的な)
-        ObservableUtil::EveryUpdate()->Subscribe([](Unit _)
-        {
-            std::cout << "Update." << std::endl;
-        });
+        auto _ =
+            ObservableUtil::EveryUpdate()->Subscribe([](Unit _)
+            {
+                std::cout << "Update." << std::endl;
+            });
     }
 
 public:
     static void DoTest()
     {
         // オブザーバー連結パターン
-        // ObserverChainTestWithLog(std::make_shared<Subject<std::string>>());
+        ObserverChainTestWithLog(std::make_shared<Subject<std::string>>());
 
         // オブザーバー連結パターン を実際に利用するときの感じの例
         // ObserverChainTest(std::make_shared<Subject<std::string>>());
@@ -208,6 +212,6 @@ public:
         // EmptyTest(std::make_shared<Subject<Unit>>());
 
         // 毎フレーム更新処理として登録する例
-        EveryUpdateTest();
+        // EveryUpdateTest();
     }
 };
