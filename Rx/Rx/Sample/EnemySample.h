@@ -2,8 +2,6 @@
 #include <iostream>
 #include <random>
 
-#include "../Subject.h"
-
 static std::random_device rd;
 static std::mt19937 gen(rd());
 
@@ -27,18 +25,19 @@ struct Enemy
     bool IsDead() const { return hp <= 0; }
 };
 
+// Enemy用のObservableを用意し、OnNextにEnemyを流す例
 void EnemySample()
 {
-    Enemy enemy(0);
-
+    constexpr int damageValue = 15;
+    auto enemy = std::make_shared<Enemy>(0);
     auto subject = std::make_shared<Subject<Enemy*>>();
 
     // dotダメージ処理
     static std::shared_ptr<Disposable> dotDamageDisposer;
     dotDamageDisposer = subject->GetObservable()
-                               ->Skip(3)
+                               // ->Skip(3)
                                // ->Take(3)
-                               // ->Take(3, [=] { dotDamageDisposer->Dispose(); })
+                               ->Take(5, [=] { dotDamageDisposer->Dispose(); })
                                ->Where([](const Enemy* e)
                                {
                                    return !e->IsDead();
@@ -46,7 +45,7 @@ void EnemySample()
                                ->Subscribe([](Enemy* e)
                                {
                                    auto prev = e->hp;
-                                   e->Damage(15);
+                                   e->Damage(damageValue);
                                    std::cout << e->uid << "'s hp: " << prev << " -> " << e->hp << std::endl;
                                });
 
@@ -68,11 +67,51 @@ void EnemySample()
     {
         std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
 
-        subject->OnNext(&enemy);
+        subject->OnNext(enemy.get());
     }
 
     // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく
+    dotDamageDisposer->Dispose();
     dotDamageDisposer = nullptr;
+    checkDeadDisposer->Dispose();
     checkDeadDisposer = nullptr;
     subject = nullptr;
+}
+
+// EveryUpdateObservableを利用した例
+void EnemySampleUseEveryUpdateObservable()
+{
+    constexpr int damageValue = 15;
+    auto enemy = std::make_shared<Enemy>(0);
+
+    // dotダメージ処理
+    static std::shared_ptr<Disposable> dotDamageDisposer;
+    dotDamageDisposer = ObservableUtil::EveryUpdate()
+                        // ->Skip(3)
+                        // ->Take(3)
+                        ->Take(5, [=] { dotDamageDisposer->Dispose(); })
+                        ->Where([=](Unit _)
+                        {
+                            return !enemy->IsDead();
+                        })
+                        ->Subscribe([=](Unit _)
+                        {
+                            auto prev = enemy->hp;
+                            enemy->Damage(damageValue);
+                            std::cout << enemy->uid << "'s hp: " << prev << " -> " << enemy->hp << std::endl;
+                        });
+
+    // 死亡検知
+    static std::shared_ptr<Disposable> checkDeadDisposer;
+    checkDeadDisposer = ObservableUtil::EveryUpdate()
+                        ->Where([=](Unit _)
+                        {
+                            return enemy->IsDead();
+                        })
+                        ->Subscribe([=](Unit _)
+                        {
+                            std::cout << enemy->uid << " is dead." << std::endl;
+                        });
+
+    // 実行はmain()内のメインループで行われる
 }

@@ -1,10 +1,9 @@
 #include <conio.h>
 #include <functional>
 
-#include "TestFunc.h"
-#include "Sample\EnemySample.h"
-
 #include "ObservableUtil.h"
+#include "Sample/EnemySample.h"
+#include "Sample/TestFunc.h"
 
 int main()
 {
@@ -14,11 +13,14 @@ int main()
     // TestFunc::DoTest();
 
     // 実用的なサンプル
-    EnemySample();
+    // EnemySample();
+    EnemySampleUseEveryUpdateObservable();
 
     auto counter = 0;
     while (counter++ < 10) // メインループの想定
     {
+        std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
+        
         // 毎フレームEveryUpdateSubjectのOnNextを叩く
         ObservableUtil::DoEveryUpdate();
     }

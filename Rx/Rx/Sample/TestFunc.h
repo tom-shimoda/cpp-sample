@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include "Unit.h"
-#include "ObservableDestroyTrigger.h"
 #include "Observable.h"
+#include "ObservableDestroyTrigger.h"
 #include "ObservableUtil.h"
 #include "Subject.h"
+#include "Unit.h"
 
 class TestFunc
 {
@@ -205,7 +205,7 @@ public:
         // AddToTest(std::make_shared<Subject<std::string>>());
 
         // 渡すものがない場合
-        // EmptyTest(std::make_shared<Subject<Empty>>());
+        // EmptyTest(std::make_shared<Subject<Unit>>());
 
         // 毎フレーム更新処理として登録する例
         EveryUpdateTest();
