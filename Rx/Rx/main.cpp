@@ -1,4 +1,3 @@
-#include <conio.h>
 #include <functional>
 
 #include "ObservableUtil.h"
@@ -20,7 +19,7 @@ int main()
     while (counter++ < 10) // メインループの想定
     {
         std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
-        
+
         // 毎フレームEveryUpdateSubjectのOnNextを叩く
         ObservableUtil::DoEveryUpdate();
     }

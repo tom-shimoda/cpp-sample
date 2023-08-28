@@ -2,6 +2,8 @@
 #include <iostream>
 #include <random>
 
+#include "../ObservableDestroyTrigger.h"
+
 static std::random_device rd;
 static std::mt19937 gen(rd());
 
@@ -102,7 +104,7 @@ void EnemySampleUseEveryUpdateObservable()
                         });
 
     // 死亡検知
-    static std::shared_ptr<Disposable> checkDeadDisposer;
+    static std::shared_ptr<Disposable> checkDeadDisposer; // 本来はAddTo()するなりで必ずDisposeする必要がある
     checkDeadDisposer = ObservableUtil::EveryUpdate()
                         ->Where([=](Unit _)
                         {
