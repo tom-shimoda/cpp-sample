@@ -168,8 +168,9 @@
     <ClInclude Include="Observer\SkipObserver.h" />
     <ClInclude Include="Observer\TakeObserver.h" />
     <ClInclude Include="Sample\EnemySample.h" />
-    <ClInclude Include="Sample\TestFunc.h" />
+    <ClInclude Include="Sample\SampleFunc.h" />
     <ClInclude Include="Subject.h" />
+    <ClInclude Include="Test\Test.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

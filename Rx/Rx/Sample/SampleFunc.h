@@ -9,10 +9,10 @@
 #include "../Subject.h"
 #include "../Unit.h"
 
-class TestFunc
+class SampleFunc
 {
     // オブザーバー連結パターン
-    static void ObserverChainTestWithLog(const std::shared_ptr<Subject<std::string>>& subject)
+    static void ObserverChainSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto _ =
@@ -47,8 +47,8 @@ class TestFunc
         subject->OnNext("HogeHoge");
     }
 
-    // Selectの戻り値の型が異なる場合のテスト
-    static void SelectObservableTest(const std::shared_ptr<Subject<std::string>>& subject)
+    // Selectの戻り値の型が異なる場合の例
+    static void SelectObservableSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto _ =
@@ -70,8 +70,8 @@ class TestFunc
         subject->OnNext("-456");
     }
 
-    // Subscribeを複数回行うテスト
-    static void SubscribeManyTimesTest(const std::shared_ptr<Subject<std::string>>& subject)
+    // Subscribeを複数回行う例
+    static void SubscribeManyTimesSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto d1 =
@@ -98,8 +98,8 @@ class TestFunc
         subject->OnNext("HogeHoge");
     }
 
-    // Diposeテスト
-    static void DisposeTest(const std::shared_ptr<Subject<std::string>>& subject)
+    // Dipose例
+    static void DisposeSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto d1 =
@@ -115,7 +115,7 @@ class TestFunc
         {
             std::cout << "--------------------------------------" << std::endl;
 
-            // 登録した処理内でのDisposeテスト → この例の場合、初回出力後に廃棄される
+            // 登録した処理内でのDispose → この例の場合、初回出力後に廃棄される
             d2->Dispose();
         });
 
@@ -131,8 +131,8 @@ class TestFunc
         subject->OnNext("HogeHoge");
     }
 
-    // AddToテスト
-    static void AddToTest(const std::shared_ptr<Subject<std::string>>& subject)
+    // AddToによるDispose例
+    static void AddToSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
         // 寿命同期テスト用オブジェクト
         struct LifeTimeObject : ObservableDestroyTrigger
@@ -164,14 +164,14 @@ class TestFunc
         subject->OnNext("HogeHoge");
     }
 
-    // 渡すものがない場合
-    static void EmptyTest(const std::shared_ptr<Subject<Unit>>& subject)
+    // 渡すものがない場合の例
+    static void EmptySample(const std::shared_ptr<Subject<Unit>>& subject)
     {
         const auto observable = subject->GetObservable();
         auto d =
             observable->Subscribe([](Unit _)
             {
-                std::cout << "Empty Test." << std::endl;
+                std::cout << "Empty." << std::endl;
             });
 
         // 実行処理
@@ -180,7 +180,7 @@ class TestFunc
     }
 
     // 毎フレーム更新処理として登録する例
-    static void EveryUpdateTest()
+    static void EveryUpdateSample()
     {
         // 毎フレーム更新したい処理の登録例 (UnirxのObservable.EveryUpdate()的な)
         auto _ =
@@ -191,27 +191,27 @@ class TestFunc
     }
 
 public:
-    static void DoTest()
+    static void DoIt()
     {
         // オブザーバー連結パターン
-        // ObserverChainTestWithLog(std::make_shared<Subject<std::string>>());
+        ObserverChainSample(std::make_shared<Subject<std::string>>());
 
-        // Selectの戻り値の型が異なる場合のテスト
-        SelectObservableTest(std::make_shared<Subject<std::string>>());
+        // Selectの戻り値の型が異なる場合の例
+        // SelectObservableSample(std::make_shared<Subject<std::string>>());
 
-        // Subscribeを複数回行うテスト
-        // SubscribeManyTimesTest(std::make_shared<Subject<std::string>>());
+        // Subscribeを複数回行う例
+        // SubscribeManyTimesSample(std::make_shared<Subject<std::string>>());
 
-        // Diposeテスト
-        // DisposeTest(std::make_shared<Subject<std::string>>());
+        // Dipose例
+        // DisposeSample(std::make_shared<Subject<std::string>>());
 
-        // AddToテスト
-        // AddToTest(std::make_shared<Subject<std::string>>());
+        // AddToによるDispose例
+        // AddToSample(std::make_shared<Subject<std::string>>());
 
-        // 渡すものがない場合
-        // EmptyTest(std::make_shared<Subject<Unit>>());
+        // 渡すものがない場合の例
+        // EmptySample(std::make_shared<Subject<Unit>>());
 
         // 毎フレーム更新処理として登録する例
-        // EveryUpdateTest();
+        // EveryUpdateSample();
     }
 };

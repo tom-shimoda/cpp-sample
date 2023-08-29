@@ -25,9 +25,9 @@ class Subject
     struct Disposer : Disposable
     {
         std::list<Source>* src;
-        std::list<Source*>* willSrc;
+        std::list<Source*>* willDispose;
 
-        Disposer(std::list<Source>* src, std::list<Source*>* willSrc): src(src), willSrc(willSrc)
+        Disposer(std::list<Source>* src, std::list<Source*>* willDispose): src(src), willDispose(willDispose)
         {
         }
 
@@ -41,7 +41,7 @@ class Subject
             {
                 if ((*itr).disposer.get() == this)
                 {
-                    willSrc->emplace_back(&*itr);
+                    willDispose->emplace_back(&*itr);
                 }
                 ++itr;
             }

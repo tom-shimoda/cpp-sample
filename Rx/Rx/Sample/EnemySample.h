@@ -15,10 +15,10 @@ static int random(int low, int high)
 
 struct Enemy
 {
-    int uid;
+    std::string name;
     int hp;
 
-    explicit Enemy(int uid): uid(uid), hp(100)
+    explicit Enemy(std::string name): name(std::move(name)), hp(100)
     {
         hp = random(1, 100);
     }
@@ -28,27 +28,26 @@ struct Enemy
 };
 
 // Enemy用のObservableを用意し、OnNextにEnemyを流す例
-void EnemySample()
+inline void EnemySample()
 {
     constexpr int damageValue = 15;
-    auto enemy = std::make_shared<Enemy>(0);
+    auto enemy = std::make_shared<Enemy>("Slime");
     auto subject = std::make_shared<Subject<Enemy*>>();
 
     // dotダメージ処理
     static std::shared_ptr<Disposable> dotDamageDisposer;
     dotDamageDisposer = subject->GetObservable()
-                               // ->Skip(3)
-                               // ->Take(3)
-                               ->Take(5, [=] { dotDamageDisposer->Dispose(); })
-                               ->Where([](const Enemy* e)
+                               ->Skip(3) // 3フレームおきに
+                               ->Take(3) // 計3回
+                               ->Where([](const Enemy* e) // 生存している敵に
                                {
                                    return !e->IsDead();
                                })
-                               ->Subscribe([](Enemy* e)
+                               ->Subscribe([](Enemy* e) // ダメージ処理
                                {
                                    auto prev = e->hp;
                                    e->Damage(damageValue);
-                                   std::cout << e->uid << "'s hp: " << prev << " -> " << e->hp << std::endl;
+                                   std::cout << e->name << "'s hp: " << prev << " -> " << e->hp << std::endl;
                                });
 
     // 死亡検知
@@ -60,12 +59,12 @@ void EnemySample()
                                })
                                ->Subscribe([](const Enemy* e)
                                {
-                                   std::cout << e->uid << " is dead." << std::endl;
+                                   std::cout << e->name << " is dead." << std::endl;
                                });
 
     // 実行
     int counter = 0;
-    while (counter++ < 10)
+    while (counter++ < 20)
     {
         std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
 
@@ -81,39 +80,39 @@ void EnemySample()
 }
 
 // EveryUpdateObservableを利用した例
-void EnemySampleUseEveryUpdateObservable()
+inline void EnemySampleUseEveryUpdateObservable(const std::shared_ptr<ObservableDestroyTrigger>& lifetimeObj)
 {
     constexpr int damageValue = 15;
-    auto enemy = std::make_shared<Enemy>(0);
+    auto enemy = std::make_shared<Enemy>("Slime");
 
     // dotダメージ処理
     static std::shared_ptr<Disposable> dotDamageDisposer;
     dotDamageDisposer = ObservableUtil::EveryUpdate()
-                        // ->Skip(3)
-                        // ->Take(3)
-                        ->Take(5, [=] { dotDamageDisposer->Dispose(); })
-                        ->Where([=](Unit _)
+                        ->Skip(2) // 2フレームおきに
+                        ->Take(5, [=] { dotDamageDisposer->Dispose(); }) // 計5回 (5回完了したらDisposeする)
+                        ->Where([=](Unit _) // 生存している敵に
                         {
                             return !enemy->IsDead();
                         })
-                        ->Subscribe([=](Unit _)
+                        ->Subscribe([=](Unit _) // ダメージ処理
                         {
                             auto prev = enemy->hp;
                             enemy->Damage(damageValue);
-                            std::cout << enemy->uid << "'s hp: " << prev << " -> " << enemy->hp << std::endl;
-                        });
+                            std::cout << enemy->name << "'s hp: " << prev << " -> " << enemy->hp << std::endl;
+                        })
+                        ->AddTo(lifetimeObj);
 
     // 死亡検知
-    static std::shared_ptr<Disposable> checkDeadDisposer; // 本来はAddTo()するなりで必ずDisposeする必要がある
-    checkDeadDisposer = ObservableUtil::EveryUpdate()
-                        ->Where([=](Unit _)
-                        {
-                            return enemy->IsDead();
-                        })
-                        ->Subscribe([=](Unit _)
-                        {
-                            std::cout << enemy->uid << " is dead." << std::endl;
-                        });
+    ObservableUtil::EveryUpdate()
+        ->Where([=](Unit _)
+        {
+            return enemy->IsDead();
+        })
+        ->Subscribe([=](Unit _)
+        {
+            std::cout << enemy->name << " is dead." << std::endl;
+        })
+        ->AddTo(lifetimeObj);
 
     // 実行はmain()内のメインループで行われる
 }
