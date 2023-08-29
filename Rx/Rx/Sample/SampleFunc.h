@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include "Observable.h"
-#include "ObservableDestroyTrigger.h"
-#include "ObservableUtil.h"
-#include "Subject.h"
-#include "Unit.h"
+#include "../Observable.h"
+#include "../ObservableDestroyTrigger.h"
+#include "../ObservableUtil.h"
+#include "../Subject.h"
+#include "../Unit.h"
 
 class TestFunc
 {

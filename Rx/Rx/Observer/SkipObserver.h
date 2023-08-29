@@ -17,7 +17,7 @@ public:
     {
         if (this->_onNext == nullptr) return;
 
-        if (counter++ < skipCount - 1) return;
+        if (counter++ < skipCount) return;
 
         counter = 0;
         this->_onNext(v);
