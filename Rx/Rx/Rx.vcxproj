@@ -154,24 +154,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ObservableDestroyTrigger.cpp" />
-    <ClCompile Include="Disposable.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ObservableUtil.cpp" />
+    <ClCompile Include="Src\Disposable.cpp"/>
+    <ClCompile Include="Src\main.cpp"/>
+    <ClCompile Include="Src\ObservableDestroyTrigger.cpp"/>
+    <ClCompile Include="Src\ObservableUtil.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Disposable.h" />
-    <ClInclude Include="ObservableDestroyTrigger.h" />
-    <ClInclude Include="Observable.h" />
-    <ClInclude Include="ObservableUtil.h" />
-    <ClInclude Include="Observer.h" />
-    <ClInclude Include="Observer\SkipObserver.h" />
-    <ClInclude Include="Observer\TakeObserver.h" />
-    <ClInclude Include="Sample\EnemySample.h" />
-    <ClInclude Include="Sample\SampleFunc.h" />
-    <ClInclude Include="Subject.h" />
-    <ClInclude Include="Test\Test.h" />
-    <ClInclude Include="Unit.h" />
+    <ClInclude Include="Src\Disposable.h" />
+    <ClInclude Include="Src\Observable.h" />
+    <ClInclude Include="Src\ObservableDestroyTrigger.h" />
+    <ClInclude Include="Src\ObservableUtil.h" />
+    <ClInclude Include="Src\Observer.h" />
+    <ClInclude Include="Src\Observer\SkipObserver.h" />
+    <ClInclude Include="Src\Observer\TakeObserver.h" />
+    <ClInclude Include="Src\Sample\EnemySample.h" />
+    <ClInclude Include="Src\Sample\SampleFunc.h" />
+    <ClInclude Include="Src\Subject.h" />
+    <ClInclude Include="Src\Test\Test.h" />
+    <ClInclude Include="Src\Unit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
