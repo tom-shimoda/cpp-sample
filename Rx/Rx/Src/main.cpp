@@ -17,9 +17,9 @@ int main()
         SampleFunc::DoIt();
     }
 
-    // --- 実用的なサンプル ---
+    // --- 実際の使用感に近いサンプル ---
     {
-        switch (0)
+        switch (1)
         {
         case 0:
             // サンプル1
@@ -36,7 +36,7 @@ int main()
 
             std::cout << "\033[35m" << "##### EnemySampleUseEveryUpdateObservable #####" << "\033[m" << std::endl;
             EnemySampleUseEveryUpdateObservable(lifetimeObj);
-
+            
             auto counter = 0;
             while (counter++ < 20) // メインループの想定
             {

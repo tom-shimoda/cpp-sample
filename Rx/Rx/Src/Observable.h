@@ -11,10 +11,13 @@ template <typename T>
 class Observable
 {
     std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe;
+    std::shared_ptr<Disposable> disposable;
 
 public:
-    explicit Observable(std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe)
-        : subscribe(std::move(subscribe))
+    explicit Observable(std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe,
+                        std::shared_ptr<Disposable> disposable)
+        : subscribe(std::move(subscribe)),
+          disposable(disposable)
     {
     }
 
@@ -54,7 +57,8 @@ public:
                         o->OnCompleted();
                     }
                 );
-            }
+            },
+            disposable
         );
     }
 
@@ -76,7 +80,8 @@ public:
                         o->OnCompleted();
                     }
                 );
-            }
+            },
+            disposable
         );
     }
 
@@ -98,7 +103,8 @@ public:
                         num
                     )
                 );
-            }
+            },
+            disposable
         );
     }
 
@@ -117,10 +123,12 @@ public:
                         {
                             o->OnCompleted();
                         },
-                        num
+                        num,
+                        disposable
                     )
                 );
-            }
+            },
+            disposable
         );
     }
 };

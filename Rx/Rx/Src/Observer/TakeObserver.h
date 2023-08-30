@@ -6,14 +6,17 @@ class TakeObserver : public Observer<T>
 {
     int counter;
     int takeCount;
+    std::shared_ptr<Disposable> disposable;
 
 public:
     explicit TakeObserver(std::function<void(T)> onNext,
                           std::function<void()> onCompleted,
-                          int takeCount)
+                          int takeCount,
+                          std::shared_ptr<Disposable> disposable)
         : Observer<T>(onNext, onCompleted),
           counter(0),
-          takeCount(takeCount)
+          takeCount(takeCount),
+          disposable(disposable)
     {
     }
 
@@ -26,6 +29,8 @@ public:
         if (++counter >= takeCount)
         {
             if (this->_onCompleted != nullptr) this->_onCompleted();
+
+            disposable->Dispose();
         }
     }
 };

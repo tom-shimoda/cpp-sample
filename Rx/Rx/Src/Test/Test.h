@@ -20,16 +20,15 @@ namespace Test
         std::string res;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Where([](const std::string& s)
-                      {
-                          return s != "Fuga";
-                      })
-                      ->Subscribe([&](const std::string& s) mutable
-                      {
-                          res = s;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Where([](const std::string& s)
+                        {
+                            return s != "Fuga";
+                        })
+                        ->Subscribe([&](const std::string& s) mutable
+                        {
+                            res = s;
+                        });
 
         // 実行処理
         subject->OnNext("test");
@@ -47,16 +46,15 @@ namespace Test
         int res = -1;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<int>([](const std::string& s)
-                      {
-                          return atoi(s.c_str());
-                      })
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res = i;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s)
+                        {
+                            return atoi(s.c_str());
+                        })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
 
         // 実行処理
         subject->OnNext("123");
@@ -70,13 +68,12 @@ namespace Test
         std::vector<int> res;
 
         const auto subject = std::make_shared<Subject<int>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Skip(3)
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res.emplace_back(i);
-                      });
+        auto _ = subject->GetObservable()
+                        ->Skip(3)
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res.emplace_back(i);
+                        });
 
         // 実行処理
         for (int i = 0; i < 9; i++)
@@ -96,13 +93,13 @@ namespace Test
         int res = 0;
 
         const auto subject = std::make_shared<Subject<Unit>>();
-        const auto observable = subject->GetObservable();
         static std::shared_ptr<Disposable> d;
-        d = observable->Take(3)
-                      ->Subscribe([&](Unit u) mutable
-                      {
-                          ++res;
-                      });
+        d = subject->GetObservable()
+                   ->Take(3)
+                   ->Subscribe([&](Unit u) mutable
+                   {
+                       ++res;
+                   });
 
         // 実行処理
         for (int i = 0; i < 5; i++)
@@ -119,14 +116,13 @@ namespace Test
         int res = -1;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
-                      ->Where([](int i) { return i > 0; })
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res = i;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Where([](int i) { return i > 0; })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
 
         // 実行処理
         subject->OnNext("123");
@@ -147,14 +143,13 @@ namespace Test
         int res = -1;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Where([](const std::string& s) { return s == "123"; })
-                      ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res = i;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Where([](const std::string& s) { return s == "123"; })
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
 
         // 実行処理
         subject->OnNext("123");
@@ -175,15 +170,14 @@ namespace Test
         int res = -1;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
-                      ->Skip(2)
-                      ->Where([](int i) { return i > 0; })
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res = i;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Skip(2)
+                        ->Where([](int i) { return i > 0; })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
 
         // 実行処理
         subject->OnNext("123");
@@ -204,15 +198,14 @@ namespace Test
         int res = -1;
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
-                      ->Take(2)
-                      ->Where([](int i) { return i > 0; })
-                      ->Subscribe([&](int i) mutable
-                      {
-                          res = i;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Take(2)
+                        ->Where([](int i) { return i > 0; })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
 
         // 実行処理
         subject->OnNext("123");
@@ -233,18 +226,17 @@ namespace Test
         std::string res1, res2;
 
         const auto subject = std::make_shared<Subject<Unit>>();
-        const auto observable = subject->GetObservable();
-        auto d1 =
-            observable->Subscribe([&](Unit _) mutable
-            {
-                res1 = "test1";
-            });
+        auto d1 = subject->GetObservable()
+                         ->Subscribe([&](Unit _) mutable
+                         {
+                             res1 = "test1";
+                         });
 
-        auto d2 =
-            observable->Subscribe([&](Unit _) mutable
-            {
-                res2 = "test2";
-            });
+        auto d2 = subject->GetObservable()
+                         ->Subscribe([&](Unit _) mutable
+                         {
+                             res2 = "test2";
+                         });
 
         // 実行処理
         subject->OnNext(Unit());
@@ -258,22 +250,21 @@ namespace Test
         int res1 = 0, res2 = 0;
 
         const auto subject = std::make_shared<Subject<Unit>>();
-        const auto observable = subject->GetObservable();
-
-        auto d1 =
-            observable->Subscribe([&](Unit _) mutable
-            {
-                ++res1;
-            });
+        auto d1 = subject->GetObservable()
+                         ->Subscribe([&](Unit _) mutable
+                         {
+                             ++res1;
+                         });
 
         static std::shared_ptr<Disposable> d2;
-        d2 = observable->Subscribe([&](Unit _) mutable
-        {
-            ++res2;
+        d2 = subject->GetObservable()
+                    ->Subscribe([&](Unit _) mutable
+                    {
+                        ++res2;
 
-            // 登録した処理内でのDisposeテスト → この例の場合、初回出力後に廃棄される
-            d2->Dispose();
-        });
+                        // 登録した処理内でのDisposeテスト → この例の場合、初回出力後に廃棄される
+                        d2->Dispose();
+                    });
 
         // 実行処理
         subject->OnNext(Unit());
@@ -301,13 +292,12 @@ namespace Test
         auto lifetimeObj = std::make_shared<LifeTimeObject>();
 
         const auto subject = std::make_shared<Subject<std::string>>();
-        const auto observable = subject->GetObservable();
-        auto d =
-            observable->Subscribe([&](const std::string& s) mutable
-                      {
-                          res = s;
-                      })
-                      ->AddTo(lifetimeObj);
+        auto d = subject->GetObservable()
+                        ->Subscribe([&](const std::string& s) mutable
+                        {
+                            res = s;
+                        })
+                        ->AddTo(lifetimeObj);
 
         // 実行処理
         subject->OnNext("test");

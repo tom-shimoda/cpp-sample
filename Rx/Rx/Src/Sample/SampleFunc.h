@@ -14,27 +14,26 @@ class SampleFunc
     // オブザーバー連結パターン
     static void ObserverChainSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<std::string>([](const std::string& s)
-                      {
-                          std::cout << s << " is coming. Repeat twice." << std::endl;
-                          return s + s;
-                      })
-                      ->Where([](const std::string& s)
-                      {
-                          if (s == "FugaFuga")
-                          {
-                              std::cout << "FugaFuga don't output" << std::endl;
-                              return false;
-                          }
+        auto _ = subject->GetObservable()
+                        ->Select<std::string>([](const std::string& s)
+                        {
+                            std::cout << s << " is coming. Repeat twice." << std::endl;
+                            return s + s;
+                        })
+                        ->Where([](const std::string& s)
+                        {
+                            if (s == "FugaFuga")
+                            {
+                                std::cout << "FugaFuga don't output" << std::endl;
+                                return false;
+                            }
 
-                          return true;
-                      })
-                      ->Subscribe([](const std::string& s)
-                      {
-                          std::cout << "value: " << s << std::endl;
-                      });
+                            return true;
+                        })
+                        ->Subscribe([](const std::string& s)
+                        {
+                            std::cout << "value: " << s << std::endl;
+                        });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -50,14 +49,13 @@ class SampleFunc
     // Selectの戻り値の型が異なる場合の例
     static void SelectObservableSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
-        const auto observable = subject->GetObservable();
-        auto _ =
-            observable->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
-                      ->Where([](int i) { return i > 0; })
-                      ->Subscribe([](int i)
-                      {
-                          std::cout << "value: " << i << std::endl;
-                      });
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Where([](int i) { return i > 0; })
+                        ->Subscribe([](int i)
+                        {
+                            std::cout << "value: " << i << std::endl;
+                        });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -73,19 +71,19 @@ class SampleFunc
     // Subscribeを複数回行う例
     static void SubscribeManyTimesSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
-        const auto observable = subject->GetObservable();
-        auto d1 =
-            observable->Select<std::string>([](const std::string& s) { return s + s; })
-                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                      ->Subscribe([](const std::string& s)
-                      {
-                          std::cout << "value: " << s << std::endl;
-                      });
+        auto d1 = subject->GetObservable()
+                         ->Select<std::string>([](const std::string& s) { return s + s; })
+                         ->Where([](const std::string& s) { return s != "FugaFuga"; })
+                         ->Subscribe([](const std::string& s)
+                         {
+                             std::cout << "value: " << s << std::endl;
+                         });
 
-        auto d2 = observable->Subscribe([](const std::string& s)
-        {
-            std::cout << "--------------------------------------" << std::endl;
-        });
+        auto d2 = subject->GetObservable()
+                         ->Subscribe([](const std::string& s)
+                         {
+                             std::cout << "--------------------------------------" << std::endl;
+                         });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -101,23 +99,23 @@ class SampleFunc
     // Dipose例
     static void DisposeSample(const std::shared_ptr<Subject<std::string>>& subject)
     {
-        const auto observable = subject->GetObservable();
-        auto d1 =
-            observable->Select<std::string>([](const std::string& s) { return s + s; })
-                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                      ->Subscribe([](const std::string& s)
-                      {
-                          std::cout << "value: " << s << std::endl;
-                      });
+        auto d1 = subject->GetObservable()
+                         ->Select<std::string>([](const std::string& s) { return s + s; })
+                         ->Where([](const std::string& s) { return s != "FugaFuga"; })
+                         ->Subscribe([](const std::string& s)
+                         {
+                             std::cout << "value: " << s << std::endl;
+                         });
 
         static std::shared_ptr<Disposable> d2;
-        d2 = observable->Subscribe([](const std::string& s)
-        {
-            std::cout << "--------------------------------------" << std::endl;
+        d2 = subject->GetObservable()
+                    ->Subscribe([](const std::string& s)
+                    {
+                        std::cout << "--------------------------------------" << std::endl;
 
-            // 登録した処理内でのDispose → この例の場合、初回出力後に廃棄される
-            d2->Dispose();
-        });
+                        // 登録した処理内でのDispose → この例の場合、初回出力後に廃棄される
+                        d2->Dispose();
+                    });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -140,15 +138,14 @@ class SampleFunc
         };
         auto lifetimeObj = std::make_shared<LifeTimeObject>();
 
-        const auto observable = subject->GetObservable();
-        auto d =
-            observable->Select<std::string>([](const std::string& s) { return s + s; })
-                      ->Where([](const std::string& s) { return s != "FugaFuga"; })
-                      ->Subscribe([](const std::string& s)
-                      {
-                          std::cout << "value: " << s << std::endl;
-                      })
-                      ->AddTo(lifetimeObj);
+        auto d = subject->GetObservable()
+                        ->Select<std::string>([](const std::string& s) { return s + s; })
+                        ->Where([](const std::string& s) { return s != "FugaFuga"; })
+                        ->Subscribe([](const std::string& s)
+                        {
+                            std::cout << "value: " << s << std::endl;
+                        })
+                        ->AddTo(lifetimeObj);
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -167,12 +164,11 @@ class SampleFunc
     // 渡すものがない場合の例
     static void EmptySample(const std::shared_ptr<Subject<Unit>>& subject)
     {
-        const auto observable = subject->GetObservable();
-        auto d =
-            observable->Subscribe([](Unit _)
-            {
-                std::cout << "Empty." << std::endl;
-            });
+        auto d = subject->GetObservable()
+                        ->Subscribe([](Unit _)
+                        {
+                            std::cout << "Empty." << std::endl;
+                        });
 
         // 実行処理
         std::cout << "Send value." << std::endl;
@@ -184,7 +180,8 @@ class SampleFunc
     {
         // 毎フレーム更新したい処理の登録例 (UnirxのObservable.EveryUpdate()的な)
         auto _ =
-            ObservableUtil::EveryUpdate()->Subscribe([](Unit _)
+            ObservableUtil::EveryUpdate()
+            ->Subscribe([](Unit _)
             {
                 std::cout << "Update." << std::endl;
             });
