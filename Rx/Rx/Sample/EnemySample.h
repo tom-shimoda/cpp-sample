@@ -23,7 +23,12 @@ struct Enemy
         hp = random(1, 100);
     }
 
-    void Damage(int value) { hp -= value; }
+    void Damage(int value)
+    {
+        hp -= value;
+        hp = hp >= 0 ? hp : 0;
+    }
+
     bool IsDead() const { return hp <= 0; }
 };
 
@@ -43,12 +48,20 @@ inline void EnemySample()
                                {
                                    return !e->IsDead();
                                })
-                               ->Subscribe([](Enemy* e) // ダメージ処理
-                               {
-                                   auto prev = e->hp;
-                                   e->Damage(damageValue);
-                                   std::cout << e->name << "'s hp: " << prev << " -> " << e->hp << std::endl;
-                               });
+                               ->Subscribe(
+                                   [](Enemy* e) // ダメージ処理
+                                   {
+                                       auto prev = e->hp;
+                                       e->Damage(damageValue);
+                                       std::cout << e->name << "'s hp: " << prev << " -> " << e->hp << std::endl;
+                                   },
+                                   []
+                                   {
+                                       // ストリーム終了 (この例の場合はTakeの指定回数完了時に呼ばれる)
+                                       std::cout << "Completed." << std::endl;
+                                       dotDamageDisposer->Dispose();
+                                   }
+                               );
 
     // 死亡検知
     static std::shared_ptr<Disposable> checkDeadDisposer;
@@ -59,6 +72,7 @@ inline void EnemySample()
                                })
                                ->Subscribe([](const Enemy* e)
                                {
+                                   // 死亡ログは毎フレーム出力
                                    std::cout << e->name << " is dead." << std::endl;
                                });
 
@@ -66,12 +80,13 @@ inline void EnemySample()
     int counter = 0;
     while (counter++ < 20)
     {
-        std::cout << "------------------- frame " << counter << " -------------------" << std::endl;
+        std::cout << "\033[34m" << "------------------- frame " << counter << " -------------------" << "\033[m" <<
+            std::endl;
 
         subject->OnNext(enemy.get());
     }
 
-    // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく
+    // 解放
     dotDamageDisposer->Dispose();
     dotDamageDisposer = nullptr;
     checkDeadDisposer->Dispose();
@@ -89,30 +104,46 @@ inline void EnemySampleUseEveryUpdateObservable(const std::shared_ptr<Observable
     static std::shared_ptr<Disposable> dotDamageDisposer;
     dotDamageDisposer = ObservableUtil::EveryUpdate()
                         ->Skip(2) // 2フレームおきに
-                        ->Take(5, [=] { dotDamageDisposer->Dispose(); }) // 計5回 (5回完了したらDisposeする)
+                        ->Take(5) // 計5回
                         ->Where([=](Unit _) // 生存している敵に
                         {
                             return !enemy->IsDead();
                         })
-                        ->Subscribe([=](Unit _) // ダメージ処理
-                        {
-                            auto prev = enemy->hp;
-                            enemy->Damage(damageValue);
-                            std::cout << enemy->name << "'s hp: " << prev << " -> " << enemy->hp << std::endl;
-                        })
+                        ->Subscribe(
+                            [=](Unit _) // ダメージ処理
+                            {
+                                auto prev = enemy->hp;
+                                enemy->Damage(damageValue);
+                                std::cout << enemy->name << "'s hp: " << prev << " -> " << enemy->hp << std::endl;
+                            },
+                            [=]
+                            {
+                                // ストリーム終了 (この例の場合はTakeの指定回数完了時に呼ばれる)
+                                dotDamageDisposer->Dispose();
+                            }
+                        )
                         ->AddTo(lifetimeObj);
 
     // 死亡検知
-    ObservableUtil::EveryUpdate()
-        ->Where([=](Unit _)
-        {
-            return enemy->IsDead();
-        })
-        ->Subscribe([=](Unit _)
-        {
-            std::cout << enemy->name << " is dead." << std::endl;
-        })
-        ->AddTo(lifetimeObj);
+    static std::shared_ptr<Disposable> checkDeadDisposer;
+    checkDeadDisposer = ObservableUtil::EveryUpdate()
+                        ->Where([=](Unit _)
+                        {
+                            return enemy->IsDead();
+                        })
+                        ->Take(1) // 死亡ログは一度だけ出す
+                        ->Subscribe(
+                            [=](Unit _)
+                            {
+                                std::cout << enemy->name << " is dead." << std::endl;
+                            },
+                            [=]
+                            {
+                                // ストリーム終了
+                                checkDeadDisposer->Dispose();
+                            }
+                        )
+                        ->AddTo(lifetimeObj);
 
     // 実行はmain()内のメインループで行われる
 }

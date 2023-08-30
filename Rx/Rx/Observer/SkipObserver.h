@@ -8,14 +8,18 @@ class SkipObserver : public Observer<T>
     int skipCount;
 
 public:
-    explicit SkipObserver(const std::function<void(T)>& onNext, int skipCount)
-        : Observer<T>(onNext), counter(0), skipCount(skipCount)
+    explicit SkipObserver(std::function<void(T)> onNext,
+                          std::function<void()> onCompleted,
+                          int skipCount)
+        : Observer<T>(onNext, onCompleted),
+          counter(0),
+          skipCount(skipCount)
     {
     }
 
     void OnNext(T v) override
     {
-        if (this->_onNext == nullptr) return;
+        if (this->isStopped) return;
 
         if (counter++ < skipCount) return;
 

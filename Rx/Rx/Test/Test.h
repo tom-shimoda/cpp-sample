@@ -98,7 +98,7 @@ namespace Test
         const auto subject = std::make_shared<Subject<Unit>>();
         const auto observable = subject->GetObservable();
         static std::shared_ptr<Disposable> d;
-        d = observable->Take(3, [=] { d->Dispose(); })
+        d = observable->Take(3)
                       ->Subscribe([&](Unit u) mutable
                       {
                           ++res;
@@ -325,7 +325,7 @@ namespace Test
     {
         if (!std::get<0>(res))
         {
-            std::cout << "Test failed: " << std::get<1>(res) << std::endl;
+            std::cout << "\033[31m" << "Test failed: " << "\033[m" << std::get<1>(res) << std::endl;
         }
     }
 
@@ -335,12 +335,12 @@ namespace Test
         IsClear(SelectTest());
         IsClear(SkipTest());
         IsClear(TakeTest());
-        
+
         IsClear(WhereChainTest());
         IsClear(SelectChainTest());
         IsClear(SkipChainTest());
         IsClear(TakeChainTest());
-        
+
         IsClear(SubscribeManyTimesTest());
         IsClear(DisposeTest());
         IsClear(AddToTest());

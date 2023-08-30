@@ -104,6 +104,14 @@ public:
         Dispose();
     }
 
+    void OnCompleted()
+    {
+        for (auto&& e : source)
+        {
+            e.observer->OnCompleted();
+        }
+    }
+
     std::shared_ptr<Observable<T>> GetObservable()
     {
         return std::make_shared<Observable<T>>(

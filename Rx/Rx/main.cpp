@@ -12,32 +12,45 @@ int main()
     // --- テスト ---
     Test::DoTest();
 
-    // --- 機能テスト ---
+    // --- 機能単体のサンプル ---
     {
-        // SampleFunc::DoIt();
+        SampleFunc::DoIt();
     }
 
     // --- 実用的なサンプル ---
     {
-        // 寿命同期テスト用オブジェクト
-        struct LifeTimeObject : ObservableDestroyTrigger
+        switch (0)
         {
-        };
-        auto lifetimeObj = std::make_shared<LifeTimeObject>();
+        case 0:
+            // サンプル1
+            std::cout << "\033[35m" << "##### EnemySample #####" << "\033[m" << std::endl;
+            EnemySample();
+            break;
+        case 1:
+            // サンプル2
+            // 寿命同期テスト用オブジェクト
+            struct LifeTimeObject : ObservableDestroyTrigger
+            {
+            };
+            auto lifetimeObj = std::make_shared<LifeTimeObject>();
 
-        // EnemySample();
-        EnemySampleUseEveryUpdateObservable(lifetimeObj);
+            std::cout << "\033[35m" << "##### EnemySampleUseEveryUpdateObservable #####" << "\033[m" << std::endl;
+            EnemySampleUseEveryUpdateObservable(lifetimeObj);
 
-        auto counter = 0;
-        while (counter++ < 10) // メインループの想定
-        {
-            std::cout << "------------------- Main loop frame " << counter << " -------------------" << std::endl;
+            auto counter = 0;
+            while (counter++ < 20) // メインループの想定
+            {
+                std::cout << "\033[34m" << "------------------- Main loop frame " << counter <<
+                    " -------------------"
+                    << "\033[m" << std::endl;
 
-            // 毎フレームEveryUpdateSubjectのOnNextを叩く
-            ObservableUtil::DoEveryUpdate();
+                // 毎フレームEveryUpdateSubjectのOnNextを叩く
+                ObservableUtil::DoEveryUpdate();
+            }
+
+            lifetimeObj = nullptr;
+            break;
         }
-
-        lifetimeObj = nullptr;
     }
 
     // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく

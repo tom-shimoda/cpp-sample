@@ -23,12 +23,17 @@ public:
         return subscribe(observer);
     }
 
-    std::shared_ptr<Disposable> Subscribe(std::function<void(T)> sub) const
+    std::shared_ptr<Disposable> Subscribe(std::function<void(T)> onNext,
+                                          std::function<void()> onCompleted = nullptr) const
     {
         return Subscribe(std::make_shared<Observer<T>>(
             [=](const T& v)
             {
-                sub(v);
+                onNext(v);
+            },
+            [=]
+            {
+                if (onCompleted != nullptr) onCompleted();
             }
         ));
     }
@@ -43,6 +48,10 @@ public:
                     [=](const T& v)
                     {
                         o->OnNext(select(v));
+                    },
+                    [=]
+                    {
+                        o->OnCompleted();
                     }
                 );
             }
@@ -61,6 +70,10 @@ public:
                         {
                             o->OnNext(v);
                         }
+                    },
+                    [=]
+                    {
+                        o->OnCompleted();
                     }
                 );
             }
@@ -78,6 +91,10 @@ public:
                         {
                             o->OnNext(v);
                         },
+                        [=]
+                        {
+                            o->OnCompleted();
+                        },
                         num
                     )
                 );
@@ -85,7 +102,7 @@ public:
         );
     }
 
-    std::shared_ptr<Observable<T>> Take(int num, std::function<void()> onTakeEnd = nullptr)
+    std::shared_ptr<Observable<T>> Take(int num)
     {
         return std::make_shared<Observable<T>>(
             [=](std::shared_ptr<Observer<T>> o)
@@ -96,8 +113,11 @@ public:
                         {
                             o->OnNext(v);
                         },
-                        num,
-                        onTakeEnd
+                        [=]
+                        {
+                            o->OnCompleted();
+                        },
+                        num
                     )
                 );
             }

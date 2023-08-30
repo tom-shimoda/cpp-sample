@@ -6,24 +6,26 @@ class TakeObserver : public Observer<T>
 {
     int counter;
     int takeCount;
-    std::function<void()> onTakeEnd;
 
 public:
-    explicit TakeObserver(const std::function<void(T)>& onNext, int takeCount, std::function<void()> onTakeEnd)
-        : Observer<T>(onNext), counter(0), takeCount(takeCount), onTakeEnd(std::move(onTakeEnd))
+    explicit TakeObserver(std::function<void(T)> onNext,
+                          std::function<void()> onCompleted,
+                          int takeCount)
+        : Observer<T>(onNext, onCompleted),
+          counter(0),
+          takeCount(takeCount)
     {
     }
 
     void OnNext(T v) override
     {
-        if (this->_onNext == nullptr) return;
-
-        if (counter++ >= takeCount)
-        {
-            if (onTakeEnd != nullptr) onTakeEnd();
-            return;
-        }
+        if (this->isStopped) return;
 
         this->_onNext(v);
+
+        if (++counter >= takeCount)
+        {
+            if (this->_onCompleted != nullptr) this->_onCompleted();
+        }
     }
 };

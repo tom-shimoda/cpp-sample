@@ -194,7 +194,7 @@ public:
     static void DoIt()
     {
         // オブザーバー連結パターン
-        ObserverChainSample(std::make_shared<Subject<std::string>>());
+        // ObserverChainSample(std::make_shared<Subject<std::string>>());
 
         // Selectの戻り値の型が異なる場合の例
         // SelectObservableSample(std::make_shared<Subject<std::string>>());
