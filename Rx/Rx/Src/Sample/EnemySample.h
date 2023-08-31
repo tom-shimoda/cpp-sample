@@ -46,7 +46,8 @@ inline void EnemySample()
                                {
                                    return !e->IsDead();
                                })
-                               ->Skip(3) // 3フレームおきに
+                               ->Skip(3) // 開始3フレーム待機後
+                               ->Interval(3) // 3フレームおきに
                                ->Take(3) // 計3回
                                ->Subscribe(
                                    [](Enemy* e) // ダメージ処理
@@ -106,7 +107,7 @@ inline void EnemySampleUseEveryUpdateObservable(const std::shared_ptr<Observable
                         {
                             return !enemy->IsDead();
                         })
-                        ->Skip(2) // 2フレームおきに
+                        ->Interval(2) // 2フレームおきに
                         ->Take(5) // 計5回
                         ->Subscribe(
                             [=](Unit _) // ダメージ処理

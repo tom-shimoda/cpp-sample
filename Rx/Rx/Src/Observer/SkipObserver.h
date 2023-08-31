@@ -23,7 +23,6 @@ public:
 
         if (counter++ < skipCount) return;
 
-        counter = 0;
         this->_onNext(v);
     }
 };

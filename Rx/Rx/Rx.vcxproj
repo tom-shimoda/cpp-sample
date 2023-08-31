@@ -165,6 +165,7 @@
     <ClInclude Include="Src\ObservableDestroyTrigger.h" />
     <ClInclude Include="Src\ObservableUtil.h" />
     <ClInclude Include="Src\Observer.h" />
+    <ClInclude Include="Src\Observer\IntervalObserver.h" />
     <ClInclude Include="Src\Observer\SkipObserver.h" />
     <ClInclude Include="Src\Observer\TakeObserver.h" />
     <ClInclude Include="Src\Sample\EnemySample.h" />

@@ -81,12 +81,6 @@ class Subject
             }
             ++willItr;
         }
-
-        if (!willDisposeSourceList.empty())
-        {
-            // 登録物の中に廃棄予定のものが見つからない
-            throw std::runtime_error("Incorrectly disposed.");
-        }
     }
 
 public:

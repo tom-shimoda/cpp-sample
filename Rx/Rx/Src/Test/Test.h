@@ -76,13 +76,13 @@ namespace Test
                         });
 
         // 実行処理
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 5; i++)
         {
             subject->OnNext(i);
         }
 
         bool test1 = res[0] == 3;
-        bool test2 = res[1] == 7;
+        bool test2 = res[1] == 4;
 
         return {test1 && test2, "SkipTest"};
     }
@@ -108,6 +108,32 @@ namespace Test
         }
 
         return {res == 3, "TakeTest"};
+    }
+
+    // Interval テスト
+    static TestResult IntervalTest()
+    {
+        std::vector<int> res;
+
+        const auto subject = std::make_shared<Subject<int>>();
+        auto _ = subject->GetObservable()
+                        ->Interval(3)
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res.emplace_back(i);
+                        });
+
+        // 実行処理
+        for (int i = 0; i < 9; i++)
+        {
+            subject->OnNext(i);
+        }
+
+        bool test1 = res[0] == 2;
+        bool test2 = res[1] == 5;
+        bool test3 = res[2] == 8;
+
+        return {test1 && test2 && test3, "IntervalTest"};
     }
 
     // Where Chain テスト
@@ -189,7 +215,10 @@ namespace Test
         subject->OnNext("123");
         bool test3 = res == 123;
 
-        return {test1 && test2 && test3, "SkipChainTest"};
+        subject->OnNext("456");
+        bool test4 = res == 456;
+
+        return {test1 && test2 && test3 && test4, "SkipChainTest"};
     }
 
     // Take Chain テスト
@@ -218,6 +247,37 @@ namespace Test
         bool test3 = res == 456;
 
         return {test1 && test2 && test3, "TakeChainTest"};
+    }
+
+    // Interval Chain テスト
+    static TestResult IntervalChainTest()
+    {
+        int res = -1;
+
+        const auto subject = std::make_shared<Subject<std::string>>();
+        auto _ = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Interval(2)
+                        ->Where([](int i) { return i > 0; })
+                        ->Subscribe([&](int i) mutable
+                        {
+                            res = i;
+                        });
+
+        // 実行処理
+        subject->OnNext("123");
+        bool test1 = res == -1;
+
+        subject->OnNext("123");
+        bool test2 = res == 123;
+
+        subject->OnNext("456");
+        bool test3 = res == 123;
+
+        subject->OnNext("456");
+        bool test4 = res == 456;
+
+        return {test1 && test2 && test3 && test4, "IntervalChainTest"};
     }
 
     // Subscribeを複数回行うテスト
@@ -325,11 +385,13 @@ namespace Test
         IsClear(SelectTest());
         IsClear(SkipTest());
         IsClear(TakeTest());
+        IsClear(IntervalTest());
 
         IsClear(WhereChainTest());
         IsClear(SelectChainTest());
         IsClear(SkipChainTest());
         IsClear(TakeChainTest());
+        IsClear(IntervalChainTest());
 
         IsClear(SubscribeManyTimesTest());
         IsClear(DisposeTest());

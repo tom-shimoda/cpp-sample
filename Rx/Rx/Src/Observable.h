@@ -3,9 +3,9 @@
 
 #include "Disposable.h"
 #include "Observer.h"
-
 #include "Observer/SkipObserver.h"
 #include "Observer/TakeObserver.h"
+#include "Observer\IntervalObserver.h"
 
 template <typename T>
 class Observable
@@ -125,6 +125,29 @@ public:
                         },
                         num,
                         disposable
+                    )
+                );
+            },
+            disposable
+        );
+    }
+    
+    std::shared_ptr<Observable<T>> Interval(int num)
+    {
+        return std::make_shared<Observable<T>>(
+            [=](std::shared_ptr<Observer<T>> o)
+            {
+                return Subscribe(
+                    std::make_shared<IntervalObserver<T>>(
+                        [=](const T& v)
+                        {
+                            o->OnNext(v);
+                        },
+                        [=]
+                        {
+                            o->OnCompleted();
+                        },
+                        num
                     )
                 );
             },

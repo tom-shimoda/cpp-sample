@@ -21,34 +21,50 @@ int main()
     {
         switch (1)
         {
-        case 0:
-            // サンプル1
-            std::cout << "\033[35m" << "##### EnemySample #####" << "\033[m" << std::endl;
-            EnemySample();
-            break;
         case 1:
-            // サンプル2
-            // 寿命同期テスト用オブジェクト
-            struct LifeTimeObject : ObservableDestroyTrigger
+            // サンプル1
             {
-            };
-            auto lifetimeObj = std::make_shared<LifeTimeObject>();
-
-            std::cout << "\033[35m" << "##### EnemySampleUseEveryUpdateObservable #####" << "\033[m" << std::endl;
-            EnemySampleUseEveryUpdateObservable(lifetimeObj);
-            
-            auto counter = 0;
-            while (counter++ < 20) // メインループの想定
-            {
-                std::cout << "\033[34m" << "------------------- Main loop frame " << counter <<
-                    " -------------------"
-                    << "\033[m" << std::endl;
-
-                // 毎フレームEveryUpdateSubjectのOnNextを叩く
-                ObservableUtil::DoEveryUpdate();
+                std::cout << "\033[35m" << "##### EnemySample #####" << "\033[m" << std::endl;
+                EnemySample();
             }
+            break;
+        case 2:
+            // サンプル2
+            {
+                // 寿命同期テスト用オブジェクト
+                struct LifeTimeObject : ObservableDestroyTrigger
+                {
+                };
+                auto lifetimeObj = std::make_shared<LifeTimeObject>();
 
-            lifetimeObj = nullptr;
+                std::cout << "\033[35m" << "##### EnemySampleUseEveryUpdateObservable #####" << "\033[m" << std::endl;
+                EnemySampleUseEveryUpdateObservable(lifetimeObj);
+
+                auto counter = 0;
+                while (counter++ < 20) // メインループの想定
+                {
+                    std::cout << "\033[34m" << "------------------- Main loop frame " << counter <<
+                        " -------------------" << "\033[m" << std::endl;
+
+                    // 毎フレームEveryUpdateSubjectのOnNextを叩く
+                    ObservableUtil::DoEveryUpdate();
+                }
+
+                lifetimeObj = nullptr;
+            }
+            break;
+        default:
+            {
+                auto counter = 0;
+                while (counter++ < 20) // メインループの想定
+                {
+                    std::cout << "\033[34m" << "------------------- Main loop frame " << counter <<
+                        " -------------------" << "\033[m" << std::endl;
+
+                    // 毎フレームEveryUpdateSubjectのOnNextを叩く
+                    ObservableUtil::DoEveryUpdate();
+                }
+            }
             break;
         }
     }
