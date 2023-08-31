@@ -13,6 +13,14 @@
 namespace Test
 {
     using TestResult = std::tuple<bool, std::string>;
+    
+    static void IsClear(TestResult res)
+    {
+        if (!std::get<0>(res))
+        {
+            std::cout << "\033[31m" << "Test failed: " << "\033[m" << std::get<1>(res) << std::endl;
+        }
+    }
 
     // Where テスト
     static TestResult WhereTest()
@@ -371,14 +379,34 @@ namespace Test
         return {test1 && test2, "AddToTest"};
     }
 
-    static void IsClear(TestResult res)
+    // 同一メソッドチェーンSubscribeしない場合のテスト
+    static TestResult ColdObservableTest()
     {
-        if (!std::get<0>(res))
-        {
-            std::cout << "\033[31m" << "Test failed: " << "\033[m" << std::get<1>(res) << std::endl;
-        }
-    }
+        auto res = -1;
+        
+        auto subject = std::make_shared<Subject<std::string>>();
+        auto o = subject->GetObservable()
+                        ->Select<int>([](const std::string& s) { return atoi(s.c_str()); })
+                        ->Where([](int i) { return i > 0; });
 
+        auto d = o->Subscribe([&](int i) mutable 
+        {
+            res = i;
+        });
+
+        // 実行処理
+        subject->OnNext("123");
+        bool test1 = res == 123;
+
+        subject->OnNext("0");
+        bool test2 = res == 123;
+
+        subject->OnNext("-456");
+        bool test3 = res == 123;
+
+        return {test1 && test2 && test3 , "ColdObservableTest"};
+    }
+    
     static void DoTest()
     {
         IsClear(WhereTest());
@@ -396,5 +424,6 @@ namespace Test
         IsClear(SubscribeManyTimesTest());
         IsClear(DisposeTest());
         IsClear(AddToTest());
+        IsClear(ColdObservableTest());
     }
 };

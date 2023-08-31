@@ -7,17 +7,25 @@
 #include "Observer/TakeObserver.h"
 #include "Observer\IntervalObserver.h"
 
+// 同一メソッドチェーンSubscribeしなかった場合に、チェーンしたObservableのshared_ptrが解放されてしまうのを回避するためのクラス
+class ObservableRef
+{
+};
+
 template <typename T>
-class Observable
+class Observable : public ObservableRef, public std::enable_shared_from_this<Observable<T>>
 {
     std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe;
     std::shared_ptr<Disposable> disposable;
+    std::shared_ptr<ObservableRef> methodChainParent; // 解放されないようメソッドチェーンの親の参照を握っておく
 
 public:
-    explicit Observable(std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe,
-                        std::shared_ptr<Disposable> disposable)
+    Observable(std::function<std::shared_ptr<Disposable>(std::shared_ptr<Observer<T>>)> subscribe,
+               std::shared_ptr<Disposable> disposable,
+               std::shared_ptr<ObservableRef> methodChainParent)
         : subscribe(std::move(subscribe)),
-          disposable(disposable)
+          disposable(std::move(disposable)),
+          methodChainParent(methodChainParent)
     {
     }
 
@@ -58,7 +66,8 @@ public:
                     }
                 );
             },
-            disposable
+            disposable,
+            std::static_pointer_cast<ObservableRef>(this->shared_from_this())
         );
     }
 
@@ -81,7 +90,8 @@ public:
                     }
                 );
             },
-            disposable
+            disposable,
+            std::static_pointer_cast<ObservableRef>(this->shared_from_this())
         );
     }
 
@@ -104,7 +114,8 @@ public:
                     )
                 );
             },
-            disposable
+            disposable,
+            std::static_pointer_cast<ObservableRef>(this->shared_from_this())
         );
     }
 
@@ -128,10 +139,11 @@ public:
                     )
                 );
             },
-            disposable
+            disposable,
+            std::static_pointer_cast<ObservableRef>(this->shared_from_this())
         );
     }
-    
+
     std::shared_ptr<Observable<T>> Interval(int num)
     {
         return std::make_shared<Observable<T>>(
@@ -151,7 +163,8 @@ public:
                     )
                 );
             },
-            disposable
+            disposable,
+            std::static_pointer_cast<ObservableRef>(this->shared_from_this())
         );
     }
 };

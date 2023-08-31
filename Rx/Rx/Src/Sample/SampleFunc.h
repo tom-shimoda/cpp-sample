@@ -181,10 +181,42 @@ class SampleFunc
         // 毎フレーム更新したい処理の登録例 (UnirxのObservable.EveryUpdate()的な)
         auto _ =
             ObservableUtil::EveryUpdate()
+            ->Take(3) // Disposeを呼ぶためのTake
             ->Subscribe([](Unit _)
             {
                 std::cout << "Update." << std::endl;
             });
+    }
+
+    // 同一メソッドチェーンSubscribeしない場合の例
+    static void ColdObservableSample()
+    {
+        auto subject = std::make_shared<Subject<Unit>>();
+        auto o = subject->GetObservable()
+                        ->Where([](Unit _)
+                        {
+                            std::cout << "1" << std::endl;
+                            return true;
+                        })
+                        ->Select<int>([](Unit _)
+                        {
+                            std::cout << "2" << std::endl;
+                            return 3;
+                        })
+                        ->Where([](int i)
+                        {
+                            std::cout << i << std::endl;
+                            return true;
+                        });
+
+        auto d = o->Subscribe([](int _)
+        {
+            std::cout << "End." << std::endl;
+        });
+
+        // 実行処理
+        std::cout << "Send value." << std::endl;
+        subject->OnNext(Unit());
     }
 
 public:
@@ -210,5 +242,8 @@ public:
 
         // 毎フレーム更新処理として登録する例
         // EveryUpdateSample();
+
+        // 同一メソッドチェーンSubscribeしない場合の例
+        ColdObservableSample();
     }
 };

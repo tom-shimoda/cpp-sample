@@ -109,14 +109,15 @@ public:
     std::shared_ptr<Observable<T>> GetObservable()
     {
         auto disposer = std::make_shared<Disposer>(&source, &willDisposeSourceList);
-        
+
         return std::make_shared<Observable<T>>(
             [=](std::shared_ptr<Observer<T>> o)
             {
                 source.emplace_back(o, disposer);
                 return disposer;
             },
-            disposer
+            disposer,
+            nullptr
         );
     }
 };

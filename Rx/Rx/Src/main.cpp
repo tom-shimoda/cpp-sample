@@ -19,7 +19,7 @@ int main()
 
     // --- 実際の使用感に近いサンプル ---
     {
-        switch (1)
+        switch (0)
         {
         case 1:
             // サンプル1
@@ -56,7 +56,7 @@ int main()
         default:
             {
                 auto counter = 0;
-                while (counter++ < 20) // メインループの想定
+                while (counter++ < 5) // メインループの想定
                 {
                     std::cout << "\033[34m" << "------------------- Main loop frame " << counter <<
                         " -------------------" << "\033[m" << std::endl;
