@@ -7,7 +7,7 @@
 
 int main()
 {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // メモリリークチェック用
+//    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // メモリリークチェック用
 
     // --- テスト ---
     Test::DoTest();
@@ -19,7 +19,7 @@ int main()
 
     // --- 実際の使用感に近いサンプル ---
     {
-        switch (0)
+        switch (1)
         {
         case 1:
             // サンプル1
@@ -72,5 +72,5 @@ int main()
     // メモリーリークチェックのタイミングではリークとして検知されてしまうので解放しておく
     ObservableUtil::everyUpdateSubject = nullptr;
 
-    _CrtDumpMemoryLeaks(); // メモリリークチェック用
+//    _CrtDumpMemoryLeaks(); // メモリリークチェック用
 }

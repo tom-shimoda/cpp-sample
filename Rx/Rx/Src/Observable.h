@@ -5,7 +5,7 @@
 #include "Observer.h"
 #include "Observer/SkipObserver.h"
 #include "Observer/TakeObserver.h"
-#include "Observer\IntervalObserver.h"
+#include "Observer/IntervalObserver.h"
 
 // 同一メソッドチェーンSubscribeしなかった場合に、チェーンしたObservableのshared_ptrが解放されてしまうのを回避するためのクラス
 class ObservableRef
